@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless-app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: paperless-app
+    spec:
+      containers:
+        - name: paperless-app
+          envFrom:
+          - configMapRef:
+              name: paperless-config   
+          image: ghcr.io/paperless-ngx/paperless-ngx:latest
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #       - curl
+          #       - -f
+          #       - http://localhost:8000
+          #   failureThreshold: 5
+          #   periodSeconds: 30
+          #   timeoutSeconds: 10
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - mountPath: /usr/src/paperless/data
+              name: data
+            - mountPath: /usr/src/paperless/media
+              name: media
+            - mountPath: /usr/src/paperless/export
+              name: export
+            - mountPath: /usr/src/paperless/consume
+              name: consume
+              
+      restartPolicy: Always
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: webserver-paperless-data
+      - name: media
+        persistentVolumeClaim:
+          claimName: webserver-paperless-media
+      - name: export
+        persistentVolumeClaim:
+          claimName: webserver-paperless-export
+      - name: consume
+        persistentVolumeClaim:
+          claimName: webserver-paperless-consume
+      # NFS consume dir
+      #     nfs:
+      #       server: Your-NFS-HOSTNAME-OR-IP
+      #       path: /path/to/export/directory

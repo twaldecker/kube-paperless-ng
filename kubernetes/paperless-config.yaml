@@ -4,7 +4,9 @@ metadata:
   name: paperless-config
   namespace: paperless
 data:
+  PAPERLESS_URL: https://docs.waldecker.dev
   PAPERLESS_SECRET_KEY: "generate a long secret or make one up"
+  PAPERLESS_DBENGINE: postgresql
   PAPERLESS_DBHOST: paperless-db
   PAPERLESS_REDIS: "redis://paperless-broker:6379"
   PAPERLESS_TIKA_ENABLED: "1"
